@@ -1,4 +1,3 @@
-# Stage 1: Build the Spring Boot application
 FROM openjdk:21-jdk-slim AS build
 
 WORKDIR /app
