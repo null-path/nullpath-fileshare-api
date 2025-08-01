@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk-slim AS build
+FROM amazoncorretto:21-jdk AS build
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN chmod +x gradlew
 
 RUN ./gradlew bootJar --no-daemon -x test
 
-FROM openjdk:21-jre-slim
+FROM amazoncorretto:21-jre
 
 WORKDIR /app
 
