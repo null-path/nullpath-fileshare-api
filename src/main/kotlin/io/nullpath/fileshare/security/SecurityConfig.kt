@@ -16,31 +16,30 @@ class SecurityConfig {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http
-            .cors { cors -> cors.configurationSource(corsConfigurationSource()) } // This line correctly applies the CORS config
+            .cors { cors -> cors.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests { authorize ->
                 authorize
                     .requestMatchers(
-                        "/h2-console/**", // H2 Console (for development, access is usually limited or removed in prod)
-                        "/",             // Root path
-                        "/swagger-ui/**",// Swagger UI documentation
-                        "/v3/api-docs/**", // OpenAPI API definition
-                        "/api/**",       // All your /api endpoints (including files and delete)
-                        "/api/public/**" // Any explicitly public API endpoints
-                    ).permitAll() // Allow all these paths publicly
-                    .anyRequest().denyAll() // Deny access to any other unlisted paths by default
+                        "/h2-console/**",
+                        "/",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/api/**",
+                        "/api/public/**"
+                    ).permitAll()
+                    .anyRequest().denyAll()
             }
             .csrf { csrf ->
-                // Disable CSRF for H2 console and all /api endpoints, as they are likely stateless/API-driven
                 csrf.ignoringRequestMatchers("/h2-console/**", "/api/**")
             }
             .headers { headers ->
-                headers.frameOptions { it.sameOrigin() } // Allow H2 console in a frame
+                headers.frameOptions { it.sameOrigin() }
                 headers.addHeaderWriter { request, response ->
-                    response.setHeader("X-XSS-Protection", "1; mode=block") // Basic XSS protection
+                    response.setHeader("X-XSS-Protection", "1; mode=block")
                 }
-                headers.contentTypeOptions { } // Prevent MIME sniffing
-                headers.cacheControl { } // Add Cache-Control header
-                headers.httpStrictTransportSecurity { hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000) } // HSTS for HTTPS
+                headers.contentTypeOptions { }
+                headers.cacheControl { }
+                headers.httpStrictTransportSecurity { hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000) }
             }
             .build()
     }
@@ -55,13 +54,13 @@ class SecurityConfig {
             // and adjust 'allowCredentials' accordingly.
             allowedOrigins = listOf("*") // Allows requests from any origin
 
-            allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed HTTP methods for CORS requests
-            allowedHeaders = listOf("*") // Allows all headers
+            allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            allowedHeaders = listOf("*")
             allowCredentials = false // <--- THIS IS THE FIX: Set to false when allowedOrigins is "*"
-            maxAge = 3600L // Cache pre-flight response for 1 hour
+            maxAge = 3600L
         }
         val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", configuration) // Apply this CORS configuration to all paths
+        source.registerCorsConfiguration("/**", configuration)
         return source
     }
 }
