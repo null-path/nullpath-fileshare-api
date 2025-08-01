@@ -1,4 +1,4 @@
-FROM amazoncorretto:21-jdk AS build
+FROM amazoncorretto:21-alpine-jdk AS build
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN chmod +x gradlew
 
 RUN ./gradlew bootJar --no-daemon -x test
 
-FROM amazoncorretto:21-jre
+FROM amazoncorretto:21-alpine-jre
 
 WORKDIR /app
 
